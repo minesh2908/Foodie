@@ -97,7 +97,7 @@ class _CartPageState extends State<CartPage> {
                           .delete()
                           .then((value) {
                         final removeAltert =
-                            SnackBar(content: Text('Removed item!'));
+                            SnackBar(content: Text('Removed item!'), duration: Duration(milliseconds: 700),);
                         ScaffoldMessenger.of(context)
                             .showSnackBar(removeAltert);
                           cartData.removeCounter();

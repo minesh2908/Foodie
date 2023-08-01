@@ -7,14 +7,16 @@ class CartProvider with ChangeNotifier{
   int _countProduct = 0;
   int get countProduct => _countProduct;
 
-int _totalPrize = 0;
+   int _totalPrize = 0;
   int get totalPrize => _totalPrize;
- 
-
+   
+    bool _productAdded = false;
+    bool get productAdded => _productAdded;
   void _setPrefItems() async{
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setInt('cart_item', _countProduct);
     pref.setInt('total_price', _totalPrize);
+    pref.setBool('product_added',_productAdded);
     notifyListeners();
   }
 
@@ -22,7 +24,7 @@ int _totalPrize = 0;
      SharedPreferences pref = await SharedPreferences.getInstance();
      _countProduct = pref.getInt('cart_item')?? 0;
      _totalPrize = pref.getInt('total_price')?? 0;
-     
+     _productAdded = pref.getBool('product_added') ?? false;
      notifyListeners();
   }
   void addCounter(){
@@ -57,5 +59,21 @@ int _totalPrize = 0;
     _getPrefItems();
     return _totalPrize;
   }
+  
+  void addProductToCart(bool value){
+    _productAdded=value;
+    _setPrefItems();
+    notifyListeners();
+  }
 
+  void removeProductFromCart(bool value){
+    _productAdded=value;
+    _setPrefItems();
+    notifyListeners();
+  }
+
+  bool getProductCart(){
+    _getPrefItems();
+    return _productAdded;
+  }
 }

@@ -11,6 +11,7 @@ import '../../customWidgets/countProduct.dart';
 import 'package:badges/badges.dart' as badges;
 
 import '../cart/cart.dart';
+
 enum SinginCharacter { fill, ourline }
 
 class ProductViewPage extends StatefulWidget {
@@ -30,19 +31,21 @@ class ProductViewPage extends StatefulWidget {
 
 class _ProductViewPageState extends State<ProductViewPage> {
   SinginCharacter _character = SinginCharacter.fill;
-
+  bool itemPresent = false;
   Widget BottomNavbar(
       {required Color bgColor,
       required IconData icon,
       required String text,
       required Color textIconColor,
+      required Color bgColorPressed,
+      required String textPressed,
       required Function() onTap}) {
     return Expanded(
         child: GestureDetector(
       onTap: onTap,
       child: Container(
         height: 60,
-        color: bgColor,
+        color: itemPresent == false ? bgColor : bgColorPressed,
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +58,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
                 width: 5,
               ),
               Text(
-                text,
+                itemPresent == false ? text : textPressed,
                 style: TextStyle(color: textIconColor, fontSize: 16),
               )
             ],
@@ -65,12 +68,27 @@ class _ProductViewPageState extends State<ProductViewPage> {
     ));
   }
 
-  Future addToCart() async {
-    final cart = Provider.of<CartProvider>(context, listen: false);
+  CollectionReference _collectionRefrence =
+      FirebaseFirestore.instance.collection('Users');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late var currentUser = _auth.currentUser;
+
+  Future checkProduct(context) async {
+    Column(
+      children: [],
+    );
+    print('---------------------');
+    print('Check Product Working!');
     final FirebaseAuth _auth = FirebaseAuth.instance;
     var currentUser = _auth.currentUser;
-    CollectionReference _collectionRefrence =
-        FirebaseFirestore.instance.collection('Users');
+  }
+
+  Future addToCart() async {
+    checkProduct(context);
+    final cart = Provider.of<CartProvider>(context, listen: false);
+
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    var currentUser = _auth.currentUser;
 
     return _collectionRefrence
         .doc(currentUser!.uid)
@@ -79,19 +97,21 @@ class _ProductViewPageState extends State<ProductViewPage> {
         .set({
       "productName": widget.productName,
       "productImage": widget.productImage,
-      "prize": widget.productPrize
+      "prize": widget.productPrize,
     }).then((value) {
       cart.addCounter();
       cart.addTotalPrice(widget.productPrize.toInt());
-      final addedCart = SnackBar(content: Text('Added to cart!'));
+      final addedCart = SnackBar(
+        content: Text('Added to cart!'),
+        duration: Duration(seconds: 1),
+      );
       ScaffoldMessenger.of(context).showSnackBar(addedCart);
       print('Added to cart');
       Consumer<CartProvider>(
-        builder: (context, value, child){
+        builder: (context, value, child) {
           print('========================');
           print(value.getTotalPrice());
           return SizedBox();
-          
         },
       );
       print(cart.getCounter());
@@ -103,7 +123,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    
+    final cart = Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: sacffoldBackgroundColour,
       bottomNavigationBar: Row(
@@ -113,19 +133,40 @@ class _ProductViewPageState extends State<ProductViewPage> {
               icon: Icons.favorite_outline,
               text: 'Add to Favourite',
               textIconColor: Colors.white,
+              textPressed: 'Add to Favourite',
+              bgColorPressed: Colors.black,
               onTap: () {}),
           BottomNavbar(
               bgColor: primaryColour,
               icon: Icons.shop,
               text: 'Add to cart',
               textIconColor: Colors.black,
+              textPressed: 'Item Added to cart',
+              bgColorPressed: Colors.yellowAccent,
               onTap: () {
-                addToCart();
+                
+                if (itemPresent == false) {
+                  addToCart();
+                  // cart.addProductToCart(itemPresent);
+                  // cart.getProductCart();
+                } else {
+                  setState(() {
+                    
+                  });
+                   cart.addProductToCart(itemPresent);
+                  cart.getProductCart();
+                  final addedCart = SnackBar(
+                    content: Text('Item already in cart!'),
+                    duration: Duration(milliseconds: 700),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(addedCart);
+                }
               })
         ],
       ),
       appBar: AppBar(
-        actions:[Padding(
+        actions: [
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: GestureDetector(
               onTap: () {
@@ -150,7 +191,8 @@ class _ProductViewPageState extends State<ProductViewPage> {
                 ),
               ),
             ),
-          )],
+          )
+        ],
         title: Text(
           'Food Details',
           style: TextStyle(color: Colors.black),
@@ -179,17 +221,22 @@ class _ProductViewPageState extends State<ProductViewPage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 10),
-              Row(children: [Text('₹',style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black26,
-                    fontSize: 18)),  Text(
-                widget.productPrize.toString(),
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black26,
-                    fontSize: 18),
-              ),],),
-             
+              Row(
+                children: [
+                  Text('₹',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black26,
+                          fontSize: 18)),
+                  Text(
+                    widget.productPrize.toString(),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black26,
+                        fontSize: 18),
+                  ),
+                ],
+              ),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,7 +252,8 @@ class _ProductViewPageState extends State<ProductViewPage> {
                     activeColor: Colors.green,
                   ),
                   Row(
-                    children: [Text('₹'),
+                    children: [
+                      Text('₹'),
                       Text(widget.productPrize.toString()),
                     ],
                   ),
@@ -229,7 +277,40 @@ class _ProductViewPageState extends State<ProductViewPage> {
                 trimExpandedText: 'Show Less',
                 colorClickableText: Colors.blue,
                 style: TextStyle(color: Colors.black),
-              )
+              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('Users')
+                    .doc(currentUser!.uid)
+                    .collection('items')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    for (int index = 0;
+                        index < snapshot.data!.docs.length;
+                        index++) {
+                      if (snapshot.data!.docs[index]['productName']
+                          .contains(widget.productName)) {
+                            
+                        itemPresent = true;
+
+                        print(itemPresent);
+                        print('Element Already Present');
+                        print(snapshot.data!.docs[index]['productName']);
+
+                        break;
+                      } else {
+                        print(itemPresent);
+                        print('Item not present');
+
+                        itemPresent = false;
+                      }
+                    }
+                  }
+                  return SizedBox();
+                },
+              ),
             ],
           ),
         ),

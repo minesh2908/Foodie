@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (_) => CartProvider(),
+        
         child: Builder(builder: (BuildContext context){
           return MaterialApp(
           debugShowCheckedModeBanner: false,
