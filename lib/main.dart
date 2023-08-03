@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_app/config/colour.dart';
+import 'package:food_app/screens/FavouriteList/favourite_list.dart';
 import 'package:food_app/screens/Search/search.dart';
 import 'package:food_app/screens/homeScreen/HomeScreen.dart';
 import 'Auth/sign_in.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Foodie',
           home: SignIn(),
+          //home: FavouriteList(),
           //home: HomeScreen(),
           //home: SearchPage(),
           theme: ThemeData(primarySwatch: primarycolor),

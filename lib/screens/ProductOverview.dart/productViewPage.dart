@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../Models/cartProductsModel.dart';
 import '../../config/colour.dart';
 import 'package:readmore/readmore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../customWidgets/countProduct.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import '../cart/cart.dart';
 
@@ -19,11 +21,15 @@ class ProductViewPage extends StatefulWidget {
   final String productImage;
   final int productPrize;
   final String productDescription;
+  final double rating;
+  final String productId;
   ProductViewPage(
       {required this.productImage,
       required this.productName,
       required this.productPrize,
-      required this.productDescription}) {}
+      required this.productDescription,
+      required this.rating,
+      required this.productId}) {}
 
   @override
   State<ProductViewPage> createState() => _ProductViewPageState();
@@ -31,21 +37,20 @@ class ProductViewPage extends StatefulWidget {
 
 class _ProductViewPageState extends State<ProductViewPage> {
   SinginCharacter _character = SinginCharacter.fill;
-  bool itemPresent = false;
+
+  bool favItem = false;
   Widget BottomNavbar(
       {required Color bgColor,
       required IconData icon,
       required String text,
       required Color textIconColor,
-      required Color bgColorPressed,
-      required String textPressed,
       required Function() onTap}) {
     return Expanded(
         child: GestureDetector(
       onTap: onTap,
       child: Container(
         height: 60,
-        color: itemPresent == false ? bgColor : bgColorPressed,
+        color: bgColor,
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -58,7 +63,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
                 width: 5,
               ),
               Text(
-                itemPresent == false ? text : textPressed,
+                text,
                 style: TextStyle(color: textIconColor, fontSize: 16),
               )
             ],
@@ -73,23 +78,10 @@ class _ProductViewPageState extends State<ProductViewPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late var currentUser = _auth.currentUser;
 
-  Future checkProduct(context) async {
-    Column(
-      children: [],
-    );
-    print('---------------------');
-    print('Check Product Working!');
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    var currentUser = _auth.currentUser;
-  }
-
   Future addToCart() async {
-    checkProduct(context);
     final cart = Provider.of<CartProvider>(context, listen: false);
-
     final FirebaseAuth _auth = FirebaseAuth.instance;
-    var currentUser = _auth.currentUser;
-
+    var currentUser = _auth.currentUser;  
     return _collectionRefrence
         .doc(currentUser!.uid)
         .collection('items')
@@ -98,6 +90,10 @@ class _ProductViewPageState extends State<ProductViewPage> {
       "productName": widget.productName,
       "productImage": widget.productImage,
       "prize": widget.productPrize,
+      "productRating": widget.rating,
+      "productDescription": widget.productDescription,
+      "productId": widget.productId,
+      "inCart" :true
     }).then((value) {
       cart.addCounter();
       cart.addTotalPrice(widget.productPrize.toInt());
@@ -114,46 +110,107 @@ class _ProductViewPageState extends State<ProductViewPage> {
           return SizedBox();
         },
       );
-      print(cart.getCounter());
-      print(cart.getTotalPrice());
     }).onError((error, stackTrace) {
       print(error.toString());
     });
   }
 
+  Future addToFavourite() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    var currentUser = _auth.currentUser;
+
+    return _collectionRefrence
+        .doc(currentUser!.uid)
+        .collection('favouriteItems')
+        .doc()
+        .set({
+      "productName": widget.productName,
+      "productImage": widget.productImage,
+      "prize": widget.productPrize,
+      "productRating": widget.rating,
+      "productDescription": widget.productDescription,
+      "productId": widget.productId,
+      "inFavourite" : true,
+    }).then((value) {
+      final addToFav = SnackBar(
+        content: Text('Added to Favourites!'),
+        duration: Duration(seconds: 1),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(addToFav);
+    });
+  }
+    
+   Future<List<cartProductModel>> getCardDetails() async{
+    QuerySnapshot<Map<String,dynamic>> snapshot = await FirebaseFirestore.instance.collection('Users').doc(currentUser!.uid).collection('items')
+                    .get();
+                    print('-------------------------------');
+                    print(snapshot.docs.length);
+     final cardData = snapshot.docs.map((e) => cartProductModel.fromSnapshot(e)).toList();
+      print(currentUser!.uid);
+     print('-------------------------------');
+     print(cardData.length);
+     return cardData;
+     } 
+
+     
+   
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCardDetails();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+      bool itemPresent=false;
     final cart = Provider.of<CartProvider>(context, listen: false);
+    print('----------------------------------------------');
+    print(itemPresent);
     return Scaffold(
       backgroundColor: sacffoldBackgroundColour,
       bottomNavigationBar: Row(
         children: [
           BottomNavbar(
               bgColor: Colors.black,
-              icon: Icons.favorite_outline,
-              text: 'Add to Favourite',
+              icon: favItem == false ? Icons.favorite_outline : Icons.favorite,
+              text: favItem == false ? 'Add to Wishlist' : 'Wishlist Updated',
               textIconColor: Colors.white,
-              textPressed: 'Add to Favourite',
-              bgColorPressed: Colors.black,
-              onTap: () {}),
-          BottomNavbar(
-              bgColor: primaryColour,
-              icon: Icons.shop,
-              text: 'Add to cart',
-              textIconColor: Colors.black,
-              textPressed: 'Item Added to cart',
-              bgColorPressed: Colors.yellowAccent,
               onTap: () {
-                
-                if (itemPresent == false) {
-                  addToCart();
-                  // cart.addProductToCart(itemPresent);
-                  // cart.getProductCart();
-                } else {
+                if (favItem == false) {
                   setState(() {
-                    
+                    favItem = true;
+                    addToFavourite();
                   });
-                   cart.addProductToCart(itemPresent);
+                } else {
+                  //print('Item already in Favourite');
+                  final addedCart = SnackBar(
+                    backgroundColor: Colors.yellow.shade400,
+                    content: Text(
+                      'Already in wishlist!',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    duration: Duration(milliseconds: 700),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(addedCart);
+                }
+              }),
+          BottomNavbar(
+              bgColor:
+                  itemPresent == false ? primaryColour : Colors.yellowAccent,
+              icon: itemPresent == false ? Icons.shop : Icons.check,
+              text: itemPresent == false ? 'Add to cart' : 'Addeded to cart',
+              textIconColor: Colors.black,
+              onTap: () {
+                if (itemPresent == false) {
+                  setState(() {
+                    itemPresent = true;
+                    addToCart();
+                  });
+                } else {
+                  setState(() {});
+                  cart.addProductToCart(itemPresent);
                   cart.getProductCart();
                   final addedCart = SnackBar(
                     content: Text('Item already in cart!'),
@@ -260,6 +317,16 @@ class _ProductViewPageState extends State<ProductViewPage> {
                   Container(width: 70, child: CountProduct()),
                 ],
               ),
+              RatingBarIndicator(
+                rating: widget.rating,
+                itemCount: 5,
+                itemSize: 20.0,
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, _) => Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -290,9 +357,8 @@ class _ProductViewPageState extends State<ProductViewPage> {
                     for (int index = 0;
                         index < snapshot.data!.docs.length;
                         index++) {
-                      if (snapshot.data!.docs[index]['productName']
-                          .contains(widget.productName)) {
-                            
+                      if (snapshot.data!.docs[index]['productId']
+                          .contains(widget.productId)) {
                         itemPresent = true;
 
                         print(itemPresent);
@@ -305,6 +371,38 @@ class _ProductViewPageState extends State<ProductViewPage> {
                         print('Item not present');
 
                         itemPresent = false;
+                      }
+                    }
+                  }
+                  return SizedBox();
+                },
+              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('Users')
+                    .doc(currentUser!.uid)
+                    .collection('favouriteItems')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    for (int index = 0;
+                        index < snapshot.data!.docs.length;
+                        index++) {
+                      if (snapshot.data!.docs[index]['productId']
+                          .contains(widget.productId)) {
+                        favItem = true;
+
+                        print(itemPresent);
+                        print('Element Already Present');
+                        print(snapshot.data!.docs[index]['productName']);
+
+                        break;
+                      } else {
+                        print(itemPresent);
+                        print('Item not present');
+
+                        favItem = false;
                       }
                     }
                   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import '../config/colour.dart';
 import 'countProduct.dart';
 
 class ProductCard extends StatelessWidget {
@@ -7,10 +8,12 @@ class ProductCard extends StatelessWidget {
       {required this.ProductImage,
       required this.ProductName,
       required this.ProductPrice,
-      required this.onTap});
+      required this.onTap,
+      required this.rating});
   final String ProductImage;
   final String ProductName;
   final int ProductPrice;
+  final double rating;
   final Function()? onTap;
   @override
   Widget build(BuildContext context) {
@@ -50,33 +53,58 @@ class ProductCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
                     SizedBox(
                       height: 10,
                     ),
                     Row(
+                     
                       children: [
                         Expanded(
+                            flex: 2,
                             child: Container(
-                          height: 30,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text('1 Kg'),
-                              Icon(
-                                Icons.arrow_drop_down,
-                                color: Color(0xffd0b84c),
-                              )
-                            ],
-                          ),
-                        )),
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text('1 Kg'),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    color: Color(0xffd0b84c),
+                                  )
+                                ],
+                              ),
+                            )),
                         SizedBox(
                           width: 10,
                         ),
-                        Expanded(child: CountProduct()),
+                        Expanded(
+                            flex: 1,
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  color: Colors.red.shade400,
+                                  border: Border.all(color: Colors.red),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    rating.toString(),
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black54),
+                                  ),
+                                  Icon(Icons.star, color:Color(0xffd6b738), size: 16,)
+                                ],
+                              )),
+                            )),
                       ],
                     )
                   ],

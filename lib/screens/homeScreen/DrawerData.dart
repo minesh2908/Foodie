@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_app/screens/FavouriteList/favourite_list.dart';
 import 'package:food_app/screens/homeScreen/HomeScreen.dart';
 import 'package:food_app/screens/myProfile/myProfile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +16,6 @@ class DrawerData extends StatefulWidget {
   State<DrawerData> createState() => _DrawerDataState();
 }
 
-
 class _DrawerDataState extends State<DrawerData> {
   Future authData() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -23,15 +23,17 @@ class _DrawerDataState extends State<DrawerData> {
     var userName = currentUser!.displayName;
     return userName;
   }
+
   @override
   void initState() {
     // TODO: implement initState
     authData();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-   final FirebaseAuth auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
     var currentUser = auth.currentUser;
     var userName = currentUser!.displayName;
     return Drawer(
@@ -59,21 +61,23 @@ class _DrawerDataState extends State<DrawerData> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Welcome,',
                             style: TextStyle(fontSize: 20),
                           ),
-                          Text(userName!,style: TextStyle(fontSize: 20),),
-                          
+                          Text(
+                            userName!,
+                            style: TextStyle(fontSize: 20),
+                          ),
                         ],
                       ),
                       SizedBox(
                         height: 10,
                       ),
-                      
                     ],
                   ),
                 )
@@ -106,7 +110,15 @@ class _DrawerDataState extends State<DrawerData> {
             DrawerOptions(
               icon: Icons.favorite,
               title: 'Wishlist',
-              onTap: () {},
+              // onTap: () {
+              //   print('Wishlist');
+              //   Navigator.push(context,
+              //       MaterialPageRoute(builder: (context) => FavouriteList()));
+              // },
+               onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => FavouriteList()));
+              },
             ),
             DrawerOptions(
               icon: Icons.copy_outlined,

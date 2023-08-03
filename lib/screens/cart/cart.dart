@@ -6,6 +6,8 @@ import '../../Provider/cartProvider.dart';
 import '../../config/colour.dart';
 import 'package:provider/provider.dart';
 
+import '../ProductOverview.dart/productViewPage.dart';
+
 class CartPage extends StatefulWidget {
   CartPage({super.key});
 
@@ -18,8 +20,6 @@ class _CartPageState extends State<CartPage> {
       .collection('Users')
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('items');
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,8 @@ class _CartPageState extends State<CartPage> {
                     Consumer<CartProvider>(
                       builder: ((context, value, child) {
                         return Row(
-                          children: [Text('₹', style: TextStyle(fontSize: 15)),
+                          children: [
+                            Text('₹', style: TextStyle(fontSize: 15)),
                             Text(
                               value.getTotalPrice().toString(),
                               style: TextStyle(fontSize: 15),
@@ -63,11 +64,12 @@ class _CartPageState extends State<CartPage> {
                   child: Center(
                       child: Text(
                     'Check out',
-                    style: TextStyle(fontSize: 17,fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
                   )),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.yellow, border: Border.all(color: Colors.black)),
+                      color: Colors.yellow,
+                      border: Border.all(color: Colors.black)),
                 )
               ],
             ),
@@ -91,17 +93,40 @@ class _CartPageState extends State<CartPage> {
                     return Center(child: CircularProgressIndicator());
                   }
                   return SearchItem(
+                    onTap1: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => ProductViewPage(
+                                productId:snapshot.data!.docs[index]
+                                        ['productId'] ,
+                                    rating: snapshot.data!.docs[index]
+                                        ['productRating'],
+                                    productImage: snapshot.data!.docs[index]
+                                        ['productImage'].toString(),
+                                    productName: snapshot.data!.docs[index]
+                                        ['productName'],
+                                    productPrize: int.parse(snapshot
+                                        .data!.docs[index]['prize']
+                                        .toString()),
+                                    productDescription: snapshot.data!
+                                        .docs[index]['productDescription'],
+                                  ))));
+                    },
                     onTap: () {
                       firestoreCart
                           .doc(snapshot.data!.docs[index].id)
                           .delete()
                           .then((value) {
-                        final removeAltert =
-                            SnackBar(content: Text('Removed item!'), duration: Duration(milliseconds: 700),);
+                        final removeAltert = SnackBar(
+                          content: Text('Removed item!'),
+                          duration: Duration(milliseconds: 700),
+                        );
                         ScaffoldMessenger.of(context)
                             .showSnackBar(removeAltert);
-                          cartData.removeCounter();
-                         cartData.removeTotalPrice(snapshot.data!.docs[index]['prize']);
+                        cartData.removeCounter();
+                        cartData.removeTotalPrice(
+                            snapshot.data!.docs[index]['prize']);
                         //  print(cartData.removeTotalPrice(snapshot.data!.docs[index]['prize']));
                       });
                     },

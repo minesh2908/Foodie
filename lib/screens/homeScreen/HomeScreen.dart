@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return  Center(child: CircularProgressIndicator());
+                              return Center(child: CircularProgressIndicator());
                             }
                             if (snapshot.hasError) {
                               return const Text('Some Error');
@@ -180,6 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .toLowerCase() ==
                                 'vegetables') {
                               return ProductCard(
+                                rating: double.parse(snapshot
+                                    .data!.docs[index]['productRating']
+                                    .toString()),
                                 ProductImage: snapshot.data!.docs[index]
                                     ['productImage'],
                                 ProductName: snapshot.data!.docs[index]
@@ -193,6 +196,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                           builder: ((context) =>
                                               ProductViewPage(
+                                                productId: snapshot.data!
+                                                    .docs[index]['productId'],
+                                                rating: double.parse(snapshot
+                                                    .data!
+                                                    .docs[index]
+                                                        ['productRating']
+                                                    .toString()),
                                                 productImage:
                                                     snapshot.data!.docs[index]
                                                         ['productImage'],
@@ -241,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return  Center(child: CircularProgressIndicator());
+                              return Center(child: CircularProgressIndicator());
                             }
                             if (snapshot.hasError) {
                               return const Text('Some Error');
@@ -254,6 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               print('----------------------------');
                               print(snapshot.data!.docs[index]['productName']);
                               return ProductCard(
+                                rating: double.parse(snapshot
+                                    .data!.docs[index]['productRating']
+                                    .toString()),
                                 ProductImage: snapshot.data!.docs[index]
                                     ['productImage'],
                                 ProductName: snapshot.data!.docs[index]
@@ -266,6 +279,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                           builder: ((context) =>
                                               ProductViewPage(
+                                                productId: snapshot.data!
+                                                    .docs[index]['productId'],
+                                                rating: double.parse(snapshot
+                                                    .data!
+                                                    .docs[index]
+                                                        ['productRating']
+                                                    .toString()),
                                                 productImage:
                                                     snapshot.data!.docs[index]
                                                         ['productImage'],

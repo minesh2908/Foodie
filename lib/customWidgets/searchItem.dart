@@ -7,39 +7,41 @@ class SearchItem extends StatelessWidget {
       required this.productImage,
       required this.isCart,
       required this.productName,
-      required this.productPrize});
+      required this.productPrize,
+      required this.onTap1});
   final String productImage;
   final String productName;
   final String productPrize;
   final bool isCart;
   final Function() onTap;
+  final Function() onTap1;
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            height: 130,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Color(0xffc2c2c2),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Row(
-                  children: [
-                    Padding(
-                  padding: const EdgeInsets.only(left: 5.0, right: 10),
-                  child: Image.network(
-                    productImage,
-                    width: 70,
-                    height: 70,
-                  ),
+        child: Container(
+          height: 130,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Color(0xffc2c2c2),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Row(
+                children: [
+                  Padding(
+                padding: const EdgeInsets.only(left: 5.0, right: 10),
+                child: Image.network(
+                  productImage,
+                  width: 70,
+                  height: 70,
                 ),
-                 Column(
+              ),
+               GestureDetector(
+                onTap: onTap1,
+                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -82,37 +84,40 @@ class SearchItem extends StatelessWidget {
                                 TextStyle(fontSize: 16, color: Colors.black26),
                           )
                   ],
-                ),
-                  ],
-                ),
-                
-               
-                Padding(
-                    padding: const EdgeInsets.only(left: 25.0),
-                    child: isCart == false
-                        ? Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add,
-                                  color: primaryColour,
-                                  size: 20,
-                                ),
-                                Text(
-                                  'ADD',
-                                  style: TextStyle(
-                                      color: primaryColour, fontSize: 23),
-                                )
-                              ],
-                            ),
-                            width: 100,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black38),
-                                borderRadius: BorderRadius.circular(40)),
-                          )
-                        : Expanded(
+                             ),
+               ),
+                ],
+              ),
+              
+             
+              Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: isCart == false
+                      ? Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                color: primaryColour,
+                                size: 20,
+                              ),
+                              Text(
+                                'ADD',
+                                style: TextStyle(
+                                    color: primaryColour, fontSize: 23),
+                              )
+                            ],
+                          ),
+                          width: 100,
+                          height: 50,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black38),
+                              borderRadius: BorderRadius.circular(40)),
+                        )
+                      : Expanded(
+                          child: GestureDetector(
+                            onTap: onTap,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -136,9 +141,9 @@ class SearchItem extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          )),
-              ],
-            ),
+                          ),
+                        )),
+            ],
           ),
         ),
       ),

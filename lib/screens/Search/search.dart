@@ -82,6 +82,7 @@ class _SearchPageState extends State<SearchPage> {
                               snapshot.data!.docs[index]['productName'];
                           if (searchTextController.text.isEmpty) {
                             return SearchItem(
+                              onTap: (){},
                               productImage: snapshot.data!.docs[index]
                                   ['productImage'],
                               productName: snapshot.data!.docs[index]
@@ -89,11 +90,15 @@ class _SearchPageState extends State<SearchPage> {
                               productPrize:
                                   '₹ ${snapshot.data!.docs[index]['prize']}',
                               isCart: false,
-                              onTap: () {
+                              onTap1: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: ((context) => ProductViewPage(
+                                           productId:snapshot.data!.docs[index]
+                                        ['productId'] ,
+                                          rating: snapshot.data!.docs[index]
+                                    ['productRating'],
                                               productImage: snapshot.data!
                                                   .docs[index]['productImage'],
                                               productName: snapshot.data!
@@ -110,11 +115,16 @@ class _SearchPageState extends State<SearchPage> {
                                   .toString()
                                   .toLowerCase())) {
                             return SearchItem(
-                              onTap: () {
+                              onTap: (){},
+                              onTap1: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: ((context) => ProductViewPage(
+                                           productId:snapshot.data!.docs[index]
+                                        ['productId'] ,
+                                          rating: snapshot.data!.docs[index]
+                                    ['productRating'],
                                               productImage: snapshot.data!
                                                   .docs[index]['productImage'],
                                               productName: snapshot.data!
