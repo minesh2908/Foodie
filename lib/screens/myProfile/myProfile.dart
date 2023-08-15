@@ -3,6 +3,7 @@ import 'package:food_app/Auth/sign_in.dart';
 import 'package:food_app/config/colour.dart';
 import 'package:food_app/screens/homeScreen/DrawerData.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 class MyProfile extends StatelessWidget {
   const MyProfile({super.key});
 
@@ -108,16 +109,58 @@ class MyProfile extends StatelessWidget {
                         ],
                       ),
                       ListData(icon: Icons.shop, name: 'Orders'),
-                      ListData(icon: Icons.location_on_outlined, name: 'Delivery Address'),
+                      ListData(
+                          icon: Icons.location_on_outlined,
+                          name: 'Delivery Address'),
                       ListData(icon: Icons.person, name: 'Refer A Friend'),
                       GestureDetector(
-                        onTap: (){
-                          auth.signOut().then((value) {
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>SignIn()));
-                          });
-                        },
-                        child: ListData(icon: Icons.logout_outlined, name: 'Log Out')),
-                     
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text('Log Out'),
+                                      content: Text(
+                                          'Are you sure you want to Log Out?'),
+                                      actions: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: GestureDetector(
+                                            onTap: (){
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                            onTap: () {
+                                              auth.signOut().then((value) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            SignIn()));
+                                              });
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                'Log Out',
+                                                style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ))
+                                      ],
+                                    ));
+                          },
+                          child: ListData(
+                              icon: Icons.logout_outlined, name: 'Log Out')),
                     ],
                   ),
                 ),

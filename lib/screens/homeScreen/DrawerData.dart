@@ -20,7 +20,7 @@ class _DrawerDataState extends State<DrawerData> {
   Future authData() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     var currentUser = _auth.currentUser;
-    var userName = currentUser!.displayName;
+    var userName = currentUser?.displayName;
     return userName;
   }
 
@@ -70,7 +70,7 @@ class _DrawerDataState extends State<DrawerData> {
                             style: TextStyle(fontSize: 20),
                           ),
                           Text(
-                            userName!,
+                            userName.toString(),
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -103,6 +103,7 @@ class _DrawerDataState extends State<DrawerData> {
               icon: Icons.person,
               title: 'My Profile',
               onTap: () {
+                
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => MyProfile()));
               },
@@ -115,7 +116,7 @@ class _DrawerDataState extends State<DrawerData> {
               //   Navigator.push(context,
               //       MaterialPageRoute(builder: (context) => FavouriteList()));
               // },
-               onTap: () {
+              onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => FavouriteList()));
               },

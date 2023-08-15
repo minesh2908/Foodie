@@ -15,7 +15,7 @@ class FavouriteList extends StatefulWidget {
 class _FavouriteListState extends State<FavouriteList> {
   final firestoreFavList = FirebaseFirestore.instance
       .collection('Users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .doc(FirebaseAuth.instance.currentUser?.uid)
       .collection('favouriteItems');
 
   @override

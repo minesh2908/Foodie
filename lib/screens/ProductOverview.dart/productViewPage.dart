@@ -37,7 +37,7 @@ class ProductViewPage extends StatefulWidget {
 
 class _ProductViewPageState extends State<ProductViewPage> {
   SinginCharacter _character = SinginCharacter.fill;
-
+bool itemPresent=false;
   bool favItem = false;
   Widget BottomNavbar(
       {required Color bgColor,
@@ -83,7 +83,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     var currentUser = _auth.currentUser;  
     return _collectionRefrence
-        .doc(currentUser!.uid)
+        .doc(currentUser?.uid)
         .collection('items')
         .doc()
         .set({
@@ -120,7 +120,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
     var currentUser = _auth.currentUser;
 
     return _collectionRefrence
-        .doc(currentUser!.uid)
+        .doc(currentUser?.uid)
         .collection('favouriteItems')
         .doc()
         .set({
@@ -140,17 +140,17 @@ class _ProductViewPageState extends State<ProductViewPage> {
     });
   }
     
-   Future<List<cartProductModel>> getCardDetails() async{
-    QuerySnapshot<Map<String,dynamic>> snapshot = await FirebaseFirestore.instance.collection('Users').doc(currentUser!.uid).collection('items')
-                    .get();
-                    print('-------------------------------');
-                    print(snapshot.docs.length);
-     final cardData = snapshot.docs.map((e) => cartProductModel.fromSnapshot(e)).toList();
-      print(currentUser!.uid);
-     print('-------------------------------');
-     print(cardData.length);
-     return cardData;
-     } 
+  //  Future<List<cartProductModel>> getCardDetails() async{
+  //   QuerySnapshot<Map<String,dynamic>> snapshot = await FirebaseFirestore.instance.collection('Users').doc(currentUser!.uid).collection('items')
+  //                   .get();
+  //                   print('-------------------------------');
+  //                   print(snapshot.docs.length);
+  //    final cardData = snapshot.docs.map((e) => cartProductModel.fromSnapshot(e)).toList();
+  //     print(currentUser!.uid);
+  //    print('-------------------------------');
+  //    print(cardData.length);
+  //    return cardData;
+  //    } 
 
      
    
@@ -158,13 +158,13 @@ class _ProductViewPageState extends State<ProductViewPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCardDetails();
+    //getCardDetails();
   }
 
 
   @override
   Widget build(BuildContext context) {
-      bool itemPresent=false;
+      
     final cart = Provider.of<CartProvider>(context, listen: false);
     print('----------------------------------------------');
     print(itemPresent);
@@ -348,7 +348,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('Users')
-                    .doc(currentUser!.uid)
+                    .doc(currentUser?.uid)
                     .collection('items')
                     .snapshots(),
                 builder: (BuildContext context,
@@ -380,7 +380,7 @@ class _ProductViewPageState extends State<ProductViewPage> {
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('Users')
-                    .doc(currentUser!.uid)
+                    .doc(currentUser?.uid)
                     .collection('favouriteItems')
                     .snapshots(),
                 builder: (BuildContext context,

@@ -4,16 +4,18 @@ import 'package:sign_button/sign_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
   @override
   State<SignIn> createState() => _SignInState();
 }
- 
+
 final firestoreUserdata = FirebaseFirestore.instance.collection('Users');
+
 class _SignInState extends State<SignIn> {
-   Future<User?> _googleSignUp() async {
+  Future<User?> _googleSignUp() async {
     try {
       final GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: ['email'],
@@ -32,24 +34,24 @@ class _SignInState extends State<SignIn> {
       final User? user = (await _auth.signInWithCredential(credential)).user;
       // print("signed in " + user.displayName);
       firestoreUserdata.doc(user!.uid).set({
-         'userName':user.displayName,
-         'email':user.email,
-         'phoneNumber' : user.phoneNumber,
-         'profilePicture':user.photoURL,
-         'userId':user.uid
-
-      }).then((value){
+        'userName': user.displayName,
+        'email': user.email,
+        'phoneNumber': user.phoneNumber,
+        'profilePicture': user.photoURL,
+        'userId': user.uid
+      }).then((value) {
         SnackBar(content: Text('User Logged In'));
-      }).onError((error, StackTrace){
-         SnackBar(content: Text(error.toString()),);
+      }).onError((error, StackTrace) {
+        SnackBar(
+          content: Text(error.toString()),
+        );
       });
       print(user);
 
-
       return user;
-    } catch (e) {
-    }
+    } catch (e) {}
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +68,6 @@ class _SignInState extends State<SignIn> {
             Container(
               padding: EdgeInsets.fromLTRB(5, 20, 5, 5),
               width: double.infinity,
-              
               child: Column(
                 children: [
                   Text(
@@ -82,7 +83,15 @@ class _SignInState extends State<SignIn> {
                         buttonSize: ButtonSize.medium,
                         btnTextColor: Colors.grey,
                         onPressed: () async {
-                       await _googleSignUp().then((value) => Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen())));
+                           print('Button Pressed');
+                          await _googleSignUp().then((value) => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen())).onError((error, stackTrace){
+                                    print(error.toString());
+                                  }),
+                              
+                                  );
                         }),
                   ),
                   Padding(
@@ -95,9 +104,17 @@ class _SignInState extends State<SignIn> {
                           print('click');
                         }),
                   ),
-                  SizedBox(height: 40,),
-                  Text('By Signing in you are accepting', style: TextStyle(color: Colors.grey[700]),),
-                  Text('our terms and condition', style: TextStyle(color: Colors.grey[700]),),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Text(
+                    'By Signing in you are accepting',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  Text(
+                    'our terms and condition',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
                 ],
               ),
             )

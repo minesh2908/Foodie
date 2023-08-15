@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:food_app/customWidgets/searchItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_app/screens/checkout/checkOut.dart';
+import 'package:food_app/screens/homeScreen/HomeScreen.dart';
 import '../../Provider/cartProvider.dart';
 import '../../config/colour.dart';
 import 'package:provider/provider.dart';
@@ -15,11 +17,27 @@ class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
 }
 
+bool isCollectionEmpty = true;
+
 class _CartPageState extends State<CartPage> {
   final firestoreCart = FirebaseFirestore.instance
       .collection('Users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .doc(FirebaseAuth.instance.currentUser?.uid)
       .collection('items');
+
+  Future<void> checkCollelction() async {
+    QuerySnapshot querySnapshot = await firestoreCart.get();
+    setState(() {
+      isCollectionEmpty = querySnapshot.docs.isEmpty;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkCollelction();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +76,35 @@ class _CartPageState extends State<CartPage> {
                     ),
                   ],
                 ),
-                Container(
-                  height: 40,
-                  width: 100,
-                  child: Center(
-                      child: Text(
-                    'Check out',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-                  )),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.yellow,
-                      border: Border.all(color: Colors.black)),
+                GestureDetector(
+                  onTap: () {
+                   print(isCollectionEmpty);
+
+                    if (isCollectionEmpty==true) {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(const SnackBar(
+                        content: Text("Cart is empty"),
+                      ));
+                    }
+                    if(isCollectionEmpty==false){
+                     Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => checkOut()));
+                    }
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 100,
+                    child: Center(
+                        child: Text(
+                      'Check out',
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                    )),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.yellow,
+                        border: Border.all(color: Colors.black)),
+                  ),
                 )
               ],
             ),
@@ -98,12 +133,13 @@ class _CartPageState extends State<CartPage> {
                           context,
                           MaterialPageRoute(
                               builder: ((context) => ProductViewPage(
-                                productId:snapshot.data!.docs[index]
-                                        ['productId'] ,
+                                    productId: snapshot.data!.docs[index]
+                                        ['productId'],
                                     rating: snapshot.data!.docs[index]
                                         ['productRating'],
-                                    productImage: snapshot.data!.docs[index]
-                                        ['productImage'].toString(),
+                                    productImage: snapshot
+                                        .data!.docs[index]['productImage']
+                                        .toString(),
                                     productName: snapshot.data!.docs[index]
                                         ['productName'],
                                     productPrize: int.parse(snapshot
@@ -128,6 +164,9 @@ class _CartPageState extends State<CartPage> {
                         cartData.removeTotalPrice(
                             snapshot.data!.docs[index]['prize']);
                         //  print(cartData.removeTotalPrice(snapshot.data!.docs[index]['prize']));
+                      });
+                      setState(() {
+                        
                       });
                     },
                     productImage: snapshot.data!.docs[index]['productImage'],
