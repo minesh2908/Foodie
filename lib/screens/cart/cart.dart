@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_app/customWidgets/searchItem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_app/screens/checkout/addNewAddress.dart';
 import 'package:food_app/screens/checkout/checkOut.dart';
 import 'package:food_app/screens/homeScreen/HomeScreen.dart';
 import '../../Provider/cartProvider.dart';
@@ -88,7 +89,7 @@ class _CartPageState extends State<CartPage> {
                     }
                     if(isCollectionEmpty==false){
                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => checkOut()));
+                        MaterialPageRoute(builder: (context) => addAddressDialog()));
                     }
                   },
                   child: Container(

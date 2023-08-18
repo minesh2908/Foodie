@@ -10,11 +10,11 @@ class AdressTile extends StatefulWidget {
       required this.pincode,
       required this.address,
       // required this.addressType,
-      required this.lname,
+    
       required this.phoneNumber});
   final String address;
   final String fname;
-  final String lname;
+
   // final String addressType;
   final String phoneNumber;
   final String city;
@@ -32,7 +32,7 @@ class _AdressTileState extends State<AdressTile> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '${widget.fname + ' '+widget.lname}',
+            '${widget.fname }',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
           Container(
