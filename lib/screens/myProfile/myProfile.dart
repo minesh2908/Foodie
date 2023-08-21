@@ -3,6 +3,9 @@ import 'package:food_app/Auth/sign_in.dart';
 import 'package:food_app/config/colour.dart';
 import 'package:food_app/screens/homeScreen/DrawerData.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../orders/orders.dart';
 
 class MyProfile extends StatelessWidget {
   const MyProfile({super.key});
@@ -108,11 +111,21 @@ class MyProfile extends StatelessWidget {
                           )
                         ],
                       ),
-                      ListData(icon: Icons.shop, name: 'Orders'),
-                      ListData(
-                          icon: Icons.location_on_outlined,
-                          name: 'Delivery Address'),
-                      ListData(icon: Icons.person, name: 'Refer A Friend'),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>OrderHistory()));
+                        },
+                          child: ListData(icon: Icons.shop, name: 'Orders')),
+                      // ListData(
+                      //     icon: Icons.location_on_outlined,
+                      //     name: 'Delivery Address'),
+                      GestureDetector(
+                          onTap: () {
+                            Share.share(
+                                'Buy Your home needs from here https://example.com');
+                          },
+                          child: ListData(
+                              icon: Icons.person, name: 'Refer A Friend')),
                       GestureDetector(
                           onTap: () {
                             showDialog(
@@ -125,7 +138,7 @@ class MyProfile extends StatelessWidget {
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: GestureDetector(
-                                            onTap: (){
+                                            onTap: () {
                                               Navigator.pop(context);
                                             },
                                             child: Text(

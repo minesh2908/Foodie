@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_app/screens/checkout/endScreen.dart';
 import 'package:provider/provider.dart';
 import '../../Provider/cartProvider.dart';
 import '../../customWidgets/searchItem.dart';
@@ -28,22 +29,29 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   Future<void> copyData() async {
     final sourceCollection = FirebaseFirestore.instance
-      .collection('Users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('items');
+        .collection('Users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('items');
     final sourceQuerySnapshot = await sourceCollection.get();
 
     final targetCollection = FirebaseFirestore.instance
-      .collection('Users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .collection('orders');
+        .collection('Users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('orders');
 
     for (QueryDocumentSnapshot sourceDoc in sourceQuerySnapshot.docs) {
-     final Map<String, dynamic>? data = sourceDoc.data() as Map<String, dynamic>?;
-     if (data != null) {
-    await targetCollection.doc(sourceDoc.id).set(data);
+      final Map<String, dynamic>? data =
+          sourceDoc.data() as Map<String, dynamic>?;
+      if (data != null) {
+        await targetCollection.doc(sourceDoc.id).set(data).then((value) async {
+          for (QueryDocumentSnapshot sourceData in sourceQuerySnapshot.docs) {
+            await sourceData.reference.delete();
+          }
+        });
+      }
     }
-  } }   
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartData = Provider.of<CartProvider>(context, listen: false);
@@ -83,11 +91,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
               ),
               GestureDetector(
                 onTap: () async {
-
-                await copyData().then((value) {
-                  print('Data added to orders');
-                  
-                });
+                  await copyData().then((value) {
+                    print('Data added to orders');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => EndScreen()));
+                  });
                 },
                 child: Container(
                   height: 40,
@@ -179,7 +187,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                           //     Image.network('${snapshot.data!.docs[index]}'),
                           leading: Container(
                             child: Image.network(
-                                snapshot.data!.docs[index]['productImage'], width: 80, height: 80,),
+                              snapshot.data!.docs[index]['productImage'],
+                              width: 80,
+                              height: 80,
+                            ),
                           ),
                           title: Text(
                             snapshot.data!.docs[index]['productName'],
